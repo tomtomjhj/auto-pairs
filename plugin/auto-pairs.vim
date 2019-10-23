@@ -293,7 +293,7 @@ func! AutoPairsInsert(key)
   endfor
 
   " Fly Mode, and the key is closed-pairs, search closed-pair and jump
-  if g:AutoPairsFlyMode &&  a:key =~ '\v[\}\]\)]'
+  if g:AutoPairsFlyMode &&  a:key =~ '\v[}\])]'
     if search(a:key, 'We')
       return "\<Right>"
     endif
