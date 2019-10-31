@@ -70,10 +70,6 @@ if !exists('g:AutoPairsShortcutToggle')
   let g:AutoPairsShortcutToggle = '<M-p>'
 end
 
-if !exists('g:AutoPairsShortcutFastWrap')
-  let g:AutoPairsShortcutFastWrap = '<M-e>'
-end
-
 if !exists('g:AutoPairsMoveCharacter')
   let g:AutoPairsMoveCharacter = "()[]{}\"'"
 end
@@ -337,7 +333,7 @@ endf
 
 
 " Fast wrap the word in brackets
-func! AutoPairsFastWrap()
+func! AutoPairsFastWrap(motion)
   let c = @"
   normal! x
   let [before, after, ig] = s:getline()
@@ -357,7 +353,7 @@ func! AutoPairsFastWrap()
       end
     endfor
     if after[1:1] =~ '\v\w'
-      normal! e
+      execute "normal!" a:motion
       normal! p
     else
       normal! p
@@ -559,10 +555,6 @@ func! AutoPairsInit()
       let do_abbrev = "<C-]>"
     endif
     execute 'inoremap <buffer> <silent> <SPACE> '.do_abbrev.'<C-R>=AutoPairsSpace()<CR>'
-  end
-
-  if g:AutoPairsShortcutFastWrap != ''
-    execute 'inoremap <buffer> <silent> '.g:AutoPairsShortcutFastWrap.' <C-R>=AutoPairsFastWrap()<CR>'
   end
 
   if g:AutoPairsShortcutBackInsert != ''
