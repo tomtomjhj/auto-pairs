@@ -1,3 +1,4 @@
+" vim: ts=2 sw=2
 " Insert or delete brackets, parens, quotes in pairs.
 " Maintainer:	JiangMiao <jiangfriend@gmail.com>
 " Contributor: camthompson
@@ -406,18 +407,42 @@ func! AutoPairsReturn()
         return "\<ESC>".cmd."O"
       endif
 
-      " conflict with javascript and coffee
-      " javascript   need   indent new line
-      " coffeescript forbid indent new line
-      if &filetype == 'coffeescript' || &filetype == 'coffee'
-        return "\<ESC>".cmd."k==o"
-      else
-        return "\<ESC>".cmd."=ko"
-      endif
+      return "\<ESC>".cmd."=ko"
     end
   endfor
   return ''
 endf
+
+" setup and return cmd
+func! AutoPairsPandocReturn1()
+  if b:autopairs_enabled == 0
+    return ''
+  end
+  let b:autopairs_return_pos = 0
+  let before = getline(line('.')-1)
+  let [ig, ig, afterline] = s:getline()
+  let cmd = ''
+  for [open, close, opt] in b:AutoPairsList
+    if close == ''
+      continue
+    end
+    if before =~ '\V'.open.'\v\s*$' && afterline =~ '^\s*\V'.close
+      let b:autopairs_return_pos = line('.')
+      if &equalprg != ''
+        return "\<ESC>O"
+      endif
+      setlocal indentexpr=PrevIndent(v:lnum)
+      return "\<ESC>=ko"
+    end
+  endfor
+  return ''
+endf
+
+" reset indentexpr
+func! AutoPairsPandocReturn2()
+  setlocal indentexpr=
+  return ''
+endfunc
 
 func! AutoPairsSpace()
   if !b:autopairs_enabled
@@ -654,15 +679,24 @@ func! AutoPairsTryInit()
         let old_cr = wrapper_name
       end
       " Always silent mapping
-      execute 'inoremap <script> <buffer> <silent> <CR> '.old_cr.'<SID>AutoPairsReturn'
+      if &ft != 'pandoc'
+        execute 'inoremap <script> <buffer> <silent> <CR> '.old_cr.'<SID>AutoPairsReturn'
+      else
+        execute 'inoremap <script> <buffer> <silent> <CR> '.old_cr.'<SID>AutoPairsPandocReturn'
+      endif
     end
   endif
   call AutoPairsInit()
 endf
+func! PrevIndent(lnum)
+  return indent(a:lnum-1)
+endfunc
 
 " Always silent the command
 inoremap <silent> <SID>AutoPairsReturn <C-R>=AutoPairsReturn()<CR>
 imap <script> <Plug>AutoPairsReturn <SID>AutoPairsReturn
+
+inoremap <silent> <SID>AutoPairsPandocReturn <C-R>=AutoPairsPandocReturn1()<CR><C-R>=AutoPairsPandocReturn2()<CR>
 
 
 au BufEnter * :call AutoPairsTryInit()
