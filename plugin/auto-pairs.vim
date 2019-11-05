@@ -14,7 +14,7 @@ end
 let g:AutoPairsLoaded = 1
 
 if !exists('g:AutoPairs')
-  let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '```':'```', '"""':'"""', "'''":"'''", "`":"`"}
+  let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '```':'```', "`":"`"}
 end
 
 " default pairs base on filetype
@@ -29,7 +29,8 @@ func! AutoPairsDefaultPairs()
   let allPairs = {
         \ 'vim': {'\v^\s*\zs"'.com_inl: ''},
         \ 'rust': {'\w\zs<': '>', '&\zs''': ''},
-        \ 'php': {'<?': '?>//k]', '<?php': '?>//k]'}
+        \ 'php': {'<?': '?>//k]', '<?php': '?>//k]'},
+        \ 'python': {'"""':'"""', "'''":"'''"},
         \ }
   for [filetype, pairs] in items(allPairs)
     if &filetype == filetype
