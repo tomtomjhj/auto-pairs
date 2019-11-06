@@ -184,6 +184,11 @@ endf
 "   au FileType html let b:AutoPairs = AutoPairsDefine({'<!--' : '-->'}, ['{'])
 "   add <!-- --> pair and remove '{' for html file
 func! AutoPairsDefine(pairs, ...)
+  " NOTE: au FileType can be fired multiple times.
+  " TODO: refactor
+  if exists('b:AutoPairs')
+    return b:AutoPairs
+  endif
   let r = AutoPairsDefaultPairs()
   if a:0 > 0
     for open in a:1
